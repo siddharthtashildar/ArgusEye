@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../SatelliteTracker"
+		},
+		{
+			"name": "DopplerRadarSystem",
+			"path": ".."
+		}
+	],
+	"settings": {}
+}
