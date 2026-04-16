@@ -26,17 +26,19 @@ The ESP32 performs signal acquisition, baseline tracking, and motion strength an
 - `ADS1115 VDD` → `ESP32 3.3V`
 - `ADS1115 GND` → `ESP32 GND`
 - `ADS1115 SDA` → `ESP32 GPIO21`
-- `ADS1115 SCL` → `ESP32 GPIO22`
+- `ADS1115 SCL` → `ESP32 GPIO18`
 - `ADS1115 ADDR` → `GND`
 - `ADS1115 A0` → LM358 output
 
 ### HB100 / LM358 / ADS1115 sensor chain
 - `HB100 VCC` → `ESP32 VIN / 5V`
 - `HB100 GND` → `GND`
-- `HB100 IF` → `LM358 IN+`
-- `LM358 VCC` → `ESP32 3.3V`
-- `LM358 GND` → `GND`
-- `LM358 OUT` → `ADS1115 A0`
+- `HB100 IF` → `LM358 IN+` (pin 3)
+- `LM358 VCC` → `ESP32 3.3V` (pin 8)
+- `LM358 GND` → `GND` (pin 4)
+- `LM358 IN-` (pin 2) → `GND` via 1kΩ resistor (Ri)
+- `LM358 OUT` (pin 1) → `LM358 IN-` (pin 2) via 100kΩ resistor (Rf) for ~100x gain
+- `LM358 OUT` (pin 1) → `ADS1115 A0`
 
 ### ESP32 to TFT
 - `TFT MOSI` → `ESP32 GPIO11`
