@@ -1,0 +1,20 @@
+{
+  "session_id": "SYNTH_IMPULSE_NOISE_STRESS_42",
+  "experiment_name": "Synthetic Benchmark: impulse_noise_stress",
+  "condition": "impulse_noise_stress",
+  "notes": "Generated synthetic dataset with exact ground truth for automated testing",
+  "target_distance_m": null,
+  "target_angle_deg": null,
+  "device": "SYNTHETIC_DOPPLER_MODEL_HB100_10.525GHZ",
+  "nominal_sample_rate_hz": 200.0,
+  "measured_sample_rate_hz": 200.0,
+  "start_time_iso": "",
+  "stop_time_iso": "",
+  "total_samples": 12000,
+  "duration_seconds": 60.0,
+  "extra_attributes": {
+    "is_synthetic": true,
+    "seed": 42,
+    "scenario": "impulse_noise_stress"
+  }
+}
