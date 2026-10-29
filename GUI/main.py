@@ -68,6 +68,7 @@ from research.spectral_analysis import (
 )
 from research.evaluation import evaluate_detections, EvaluationResult
 from research.recorder import SessionRecorder, load_recording
+from research.ml_classifier import LiveRadarMLClassifier, train_radar_model
 
 APP_TITLE = "ARGUS-EYE // DOPPLER RADAR CONSOLE"
 BAUD_DEFAULT = 115200
@@ -292,6 +293,10 @@ class RadarDashboard(QMainWindow):
         # Recording
         self.recorder = SessionRecorder()
         self.session_rows: List[dict] = []
+
+        # Machine Learning Classifier
+        self.ml_classifier = LiveRadarMLClassifier()
+        self.last_ml_inference_time = 0.0
 
         self._build_ui()
         self._apply_styles()
@@ -536,6 +541,26 @@ class RadarDashboard(QMainWindow):
         self.firmware_state = QLabel("DEVICE FLAG  /  —")
         self.firmware_state.setObjectName("microBadge")
         side.addWidget(self.firmware_state)
+
+        side.addWidget(self._divider())
+        side.addWidget(self._eyebrow("AI CLASSIFIER (MICRO-DOPPLER)"))
+        self.ml_badge = QLabel("AI: MODEL READY")
+        self.ml_badge.setObjectName("mlBadge")
+        self.ml_badge.setAlignment(Qt.AlignCenter)
+        self.ml_badge.setMinimumHeight(32)
+        self.ml_badge.setStyleSheet(f"color: {GREEN}; background: #0c2018; border: 1px solid #145b3a; font-family: Consolas; font-size: 10px; font-weight: 800; border-radius: 3px; padding: 4px;")
+        side.addWidget(self.ml_badge)
+
+        self.ml_detail = QLabel("Trained on room & clutter recordings.")
+        self.ml_detail.setObjectName("microText")
+        self.ml_detail.setWordWrap(True)
+        side.addWidget(self.ml_detail)
+
+        self.retrain_btn = QPushButton("RETRAIN ML 🧠")
+        self.retrain_btn.setObjectName("quietButton")
+        self.retrain_btn.setToolTip("Retrain model on all recordings in data/experiments/")
+        self.retrain_btn.clicked.connect(self.retrain_ml_model)
+        side.addWidget(self.retrain_btn)
 
         side.addStretch(1)
         self.rate_label = QLabel("0.0 SAMPLES/S  ·  QUEUE 0")
@@ -933,7 +958,53 @@ class RadarDashboard(QMainWindow):
             self.update_metrics()
             self.last_ui_update = now
 
+        # Periodic Live ML inference (~2 Hz)
+        if (now - self.last_ml_inference_time) >= 0.45:
+            self.last_ml_inference_time = now
+            self.run_live_ml_inference()
+
         self.finish_calibration_if_due(now)
+
+    def run_live_ml_inference(self) -> None:
+        if len(self.signal_history) < 20:
+            return
+        ac_win = np.array(list(self.signal_history)[-35:], dtype=float)
+        env_win = np.abs(ac_win)
+        pred_label, conf = self.ml_classifier.predict(ac_win, env_win)
+
+        if pred_label == "AMBIENT_CLUTTER_FAN":
+            self.ml_badge.setText(f"FAN / CLUTTER ({conf*100:.0f}%)")
+            self.ml_badge.setStyleSheet("color: #ffb830; background: #261b07; border: 1px solid #784f0a; font-family: Consolas; font-size: 10px; font-weight: 800; border-radius: 3px; padding: 4px;")
+            self.ml_detail.setText("Periodic harmonics detected · False alarm suppressed.")
+        elif pred_label == "HUMAN_WALKING":
+            self.ml_badge.setText(f"HUMAN WALKING ({conf*100:.0f}%)")
+            self.ml_badge.setStyleSheet(f"color: {MAGENTA}; background: #271019; border: 1px solid #8c2341; font-family: Consolas; font-size: 10px; font-weight: 800; border-radius: 3px; padding: 4px;")
+            self.ml_detail.setText("Micro-Doppler limb spread confirmed.")
+        elif pred_label == "HUMAN_GESTURE":
+            self.ml_badge.setText(f"HAND GESTURE ({conf*100:.0f}%)")
+            self.ml_badge.setStyleSheet(f"color: {CYAN}; background: #0c1f24; border: 1px solid #14555e; font-family: Consolas; font-size: 10px; font-weight: 800; border-radius: 3px; padding: 4px;")
+            self.ml_detail.setText("Localized oscillation detected.")
+        elif pred_label == "QUIET_ROOM":
+            self.ml_badge.setText(f"QUIET ROOM ({conf*100:.0f}%)")
+            self.ml_badge.setStyleSheet(f"color: {GREEN}; background: #0c2018; border: 1px solid #145b3a; font-family: Consolas; font-size: 10px; font-weight: 800; border-radius: 3px; padding: 4px;")
+            self.ml_detail.setText("Clean stationary baseline.")
+
+    def retrain_ml_model(self) -> None:
+        try:
+            self._append_log("Retraining ML classifier on all recordings in data/experiments/...")
+            res = train_radar_model()
+            self.ml_classifier.load()
+            self._append_log(f"ML Retraining Complete! Validation Accuracy: {res['test_accuracy']*100:.1f}%")
+            QMessageBox.information(
+                self, "ML Retraining Succeeded",
+                f"Model successfully updated with latest recordings!\n\n"
+                f"Training Accuracy:   {res['train_accuracy']*100:.1f}%\n"
+                f"Validation Accuracy: {res['test_accuracy']*100:.1f}%\n\n"
+                f"Model saved to: data/radar_ml_model.pkl"
+            )
+        except Exception as exc:
+            self._append_log(f"ML Retrain Error: {exc}")
+            QMessageBox.critical(self, "ML Training Error", str(exc))
 
     def update_pc_adaptive(self, envelope: int) -> bool:
         thresh = self.trigger_threshold()

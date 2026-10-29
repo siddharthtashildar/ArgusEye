@@ -15,7 +15,7 @@
 
 // Hardware Objects
 Adafruit_ADS1115 ads;
-Adafruit_ST7789  tft = Adafruit_ST7789(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_MOSI, PIN_TFT_SCLK, PIN_TFT_RST);
+Adafruit_ST7789  tft = Adafruit_ST7789(&SPI, PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_RST);
 RadarDSP         radarDsp;
 
 // Hardware & Display State
@@ -231,7 +231,8 @@ void setup() {
         adsOK = true;
     }
 
-    // Initialize ST7789 TFT Display
+    // Initialize ST7789 TFT Display via Hardware SPI
+    SPI.begin(PIN_TFT_SCLK, -1, PIN_TFT_MOSI, PIN_TFT_CS);
     tft.init(240, 320);
     tft.setRotation(1);
     screenW = tft.width();

@@ -1,0 +1,16 @@
+{
+  "session_id": "AE_20261029_235749",
+  "experiment_name": "Room_Quite",
+  "condition": "stationary",
+  "notes": "",
+  "target_distance_m": null,
+  "target_angle_deg": null,
+  "device": "ESP32-S3 + HB100 (10.525GHz) + LM358 + ADS1115",
+  "nominal_sample_rate_hz": 200.0,
+  "measured_sample_rate_hz": 3.95,
+  "start_time_iso": "2026-10-29T23:57:49.525",
+  "stop_time_iso": "2026-10-29T23:59:21.094",
+  "total_samples": 362,
+  "duration_seconds": 91.562,
+  "extra_attributes": {}
+}

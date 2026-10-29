@@ -1,0 +1,16 @@
+{
+  "session_id": "AE_20261030_014513",
+  "experiment_name": "RoomHand",
+  "condition": "hand_motion",
+  "notes": "",
+  "target_distance_m": null,
+  "target_angle_deg": null,
+  "device": "ESP32-S3 + HB100 (10.525GHz) + LM358 + ADS1115",
+  "nominal_sample_rate_hz": 200.0,
+  "measured_sample_rate_hz": 3.84,
+  "start_time_iso": "2026-10-30T01:45:13.080",
+  "stop_time_iso": "2026-10-30T01:47:27.223",
+  "total_samples": 515,
+  "duration_seconds": 134.14,
+  "extra_attributes": {}
+}

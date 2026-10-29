@@ -1,0 +1,16 @@
+{
+  "session_id": "AE_20261030_001755",
+  "experiment_name": "NoisyRoom",
+  "condition": "stationary",
+  "notes": "",
+  "target_distance_m": null,
+  "target_angle_deg": null,
+  "device": "ESP32-S3 + HB100 (10.525GHz) + LM358 + ADS1115",
+  "nominal_sample_rate_hz": 200.0,
+  "measured_sample_rate_hz": 3.9,
+  "start_time_iso": "2026-10-30T00:17:55.999",
+  "stop_time_iso": "2026-10-30T00:19:39.722",
+  "total_samples": 405,
+  "duration_seconds": 103.718,
+  "extra_attributes": {}
+}

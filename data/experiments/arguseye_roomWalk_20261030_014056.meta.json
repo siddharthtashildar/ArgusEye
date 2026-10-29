@@ -1,0 +1,16 @@
+{
+  "session_id": "AE_20261030_014056",
+  "experiment_name": "roomWalk",
+  "condition": "walking",
+  "notes": "",
+  "target_distance_m": null,
+  "target_angle_deg": null,
+  "device": "ESP32-S3 + HB100 (10.525GHz) + LM358 + ADS1115",
+  "nominal_sample_rate_hz": 200.0,
+  "measured_sample_rate_hz": 3.85,
+  "start_time_iso": "2026-10-30T01:40:56.642",
+  "stop_time_iso": "2026-10-30T01:43:27.647",
+  "total_samples": 581,
+  "duration_seconds": 151.0,
+  "extra_attributes": {}
+}
